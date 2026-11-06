@@ -1,0 +1,71 @@
+case_id,verdict,reviewer,reviewed_at,comments,edited_root_cause,edited_fix
+NET-001,Edited,Network Lead Engineer,2026-08-30T09:48:19.863605,AI identified general issue but fix command required syntax tuning or safety parameter adjustment.,Trunk native VLAN mismatch between Switch-A (Native VLAN 1) and Switch-B (Native VLAN 99).,"Switch-A(config)# interface GigabitEthernet0/1
+Switch-A(config-if)# switchport trunk native vlan 99"
+NET-002,Accepted,Network Operations Specialist,2026-08-30T09:48:19.864843,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,Access VLAN Missing in VLAN Database: VLAN 20 assigned to access port does not exist in vlan.dat.,vlan 20; name VLAN_20; exit
+NET-003,Accepted,Network Operations Specialist,2026-08-30T09:48:19.865650,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,"Subinterface Dot1Q VLAN Tag Mismatch: Subinterface GigabitEthernet0/0.30 expects VLAN 300, but client is in VLAN 30.",interface GigabitEthernet0/0.30; encapsulation dot1Q 30
+NET-004,Accepted,Network Operations Specialist,2026-08-30T09:48:19.866194,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,Required VLAN Pruned from Trunk Allowed List: Traffic for unallowed VLANs is blocked at 802.1Q trunk.,interface Gig0/2; switchport trunk allowed vlan add 40
+NET-005,Rejected,Senior Tier-3 TAC Engineer,2026-08-30T09:48:19.866952,AI diagnosis contained critical failure: Hallucinated Interface & Destructive L2/L3 Command. Rejected AI fix.,"Both ends of the link are set to dynamic auto, so neither end initiates trunk negotiation, defaulting to access mode.","Switch-A(config)# interface FastEthernet0/24
+Switch-A(config-if)# switchport mode trunk
+
+Switch-B(config)# interface FastEthernet0/24
+Switch-B(config-if)# switchport mode trunk"
+NET-006,Accepted,Network Operations Specialist,2026-08-30T09:48:19.868313,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,Host Default Gateway Mismatch: Host sending off-subnet packets to non-existent gateway 192.168.1.254.,Set host default gateway to 192.168.1.1.
+NET-007,Accepted,Network Operations Specialist,2026-08-30T23:26:12.122481,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,"HSRP group and virtual IP mismatch – Router-1 is in group 10 with virtual IP 10.1.1.1 while Router-2 is configured in group 20 with virtual IP 10.1.1.254, so the two routers are not participating in the same HSRP instance, causing ARP flapping and duplicate gateway responses.","Router-2(config)# interface GigabitEthernet0/0
+Router-2(config-if)# no standby 20
+Router-2(config-if)# standby 10 ip 10.1.1.1
+Router-2(config-if)# standby 10 priority 100
+Router-2(config-if)# standby 10 preempt
+Router-2(config-if)# exit"
+NET-008,Accepted,Network Operations Specialist,2026-08-30T09:48:19.869622,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,Switch Management Default Gateway Missing: Switch SVI cannot respond to management traffic from remote subnets.,ip default-gateway 10.99.1.1
+NET-009,Edited,Network Lead Engineer,2026-08-30T09:48:19.870232,AI identified general issue but fix command required syntax tuning or safety parameter adjustment.,Subnet mask mismatch on point-to-point link: Router-A has /30 (255.255.255.252) while Router-B has /24 (255.255.255.0).,"Router-B(config)# interface GigabitEthernet0/0/0
+Router-B(config-if)# ip address 172.16.0.2 255.255.255.252"
+NET-010,Accepted,Network Operations Specialist,2026-08-30T22:51:35.519358,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,"Missing 'ip helper-address' on subinterface GigabitEthernet0/0.10 prevents DHCP broadcasts from VLAN 10 reaching the DHCP server in VLAN 50, causing PCs to self‑assign APIPA addresses.","Router-1(config)# interface GigabitEthernet0/0.10
+Router-1(config-if)# ip helper-address 192.168.50.2
+Router-1(config-if)# exit"
+NET-011,Edited,Network Lead Engineer,2026-08-30T09:48:19.871751,AI identified general issue but fix command required syntax tuning or safety parameter adjustment.,DHCP address pool FLOOR2 is completely exhausted (100% utilization) due to overly restrictive /28 subnet mask.,"Router-1(config)# ip dhcp pool FLOOR2
+Router-1(config-dhcp)# network 192.168.2.0 255.255.255.0"
+NET-012,Accepted,Network Operations Specialist,2026-08-30T09:48:19.872656,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,Inverted Wildcard Mask in Routing Statement: Cisco OSPF requires wildcard bits where 0 is match and 255 is ignore.,no network <ip> 255.255.255.0 area <area>; network <ip> 0.0.0.255 area <area>
+NET-013,Accepted,Network Operations Specialist,2026-08-30T09:48:19.873251,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,Inverted Wildcard Mask in Routing Statement: Cisco OSPF requires wildcard bits where 0 is match and 255 is ignore.,no network <ip> 255.255.255.0 area <area>; network <ip> 0.0.0.255 area <area>
+NET-014,Accepted,Network Operations Specialist,2026-08-30T09:48:19.873925,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,DHCP Snooping Untrusted Uplink Port: DHCP Server replies arriving on untrusted ports are dropped by switch.,interface GigabitEthernet0/1; ip dhcp snooping trust
+NET-015,Rejected,Senior Tier-3 TAC Engineer,2026-08-30T09:48:19.874445,AI diagnosis contained critical failure: Failure to check active IP topology (192.168.1.200 does not exist). Rejected AI fix.,Host PC-1 is statically configured with non-existent DNS server IP 192.168.1.200 instead of active DNS server 192.168.1.2.,On PC-1: Change static DNS Server address to 192.168.1.2 (or configure DHCP to supply correct DNS).
+NET-016,Accepted,Network Operations Specialist,2026-08-30T09:48:19.875265,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,DNS Resolution Failure / Inactive DNS Server: Client is pointing to invalid DNS server IP or DNS service is inactive.,Configure client DNS server to valid server IP and ensure DNS service is ON.
+NET-017,Accepted,Network Operations Specialist,2026-08-30T09:48:19.876056,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,Missing Default Static Route (Gateway of Last Resort): Router drops packets destined for non-local external networks.,ip route 0.0.0.0 0.0.0.0 <next_hop_ip>
+NET-018,Accepted,Network Operations Specialist,2026-08-30T09:48:19.876735,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,OSPF Area ID Mismatch: OSPF neighbors must be in the same Area ID on common link.,router ospf 1; network <subnet> <wildcard> area 0
+NET-019,Accepted,Network Operations Specialist,2026-08-30T09:48:19.877282,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,Inverted Wildcard Mask in Routing Statement: Cisco OSPF requires wildcard bits where 0 is match and 255 is ignore.,no network <ip> 255.255.255.0 area <area>; network <ip> 0.0.0.255 area <area>
+NET-020,Edited,Network Lead Engineer,2026-08-30T09:48:19.877827,AI identified general issue but fix command required syntax tuning or safety parameter adjustment.,OSPF Hello/Dead timer mismatch: R1 is using 10/40 seconds while R2 is using 5/20 seconds.,"R2(config)# interface Serial0/0/0
+R2(config-if)# ip ospf hello-interval 10
+R2(config-if)# ip ospf dead-interval 40"
+NET-021,Accepted,Network Operations Specialist,2026-08-30T09:48:19.878481,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,OSPF Passive-Interface Configured on Neighbor Link: Passive-interface suppresses OSPF Hellos on transit link.,router ospf 1; no passive-interface GigabitEthernet0/0
+NET-022,Rejected,Senior Tier-3 TAC Engineer,2026-08-30T09:48:19.879106,AI diagnosis contained critical failure: Asymmetric Routing Blindspot & Unsafe ACL Permissive Override. Rejected AI fix.,"Router-B lacks a return route for Site-A subnet 192.168.10.0/24, causing reply packets to be dropped at Router-B.",Router-B(config)# ip route 192.168.10.0 255.255.255.0 172.16.1.1
+NET-023,Edited,Network Lead Engineer,2026-08-30T09:48:19.879937,AI identified general issue but fix command required syntax tuning or safety parameter adjustment.,"RIPv2 automatic summarization is enabled, summarizing discontiguous /24 subnets into a single 172.16.0.0/16 classful route.","R1(config)# router rip
+R1(config-router)# no auto-summary
+
+R2(config)# router rip
+R2(config-router)# no auto-summary
+
+R3(config)# router rip
+R3(config-router)# no auto-summary"
+NET-024,Accepted,Network Operations Specialist,2026-08-30T09:48:19.880566,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,EIGRP Autonomous System (AS) Mismatch: EIGRP routers must be configured with matching AS numbers.,no router eigrp 200; router eigrp 100
+NET-025,Edited,Network Lead Engineer,2026-08-30T09:48:19.881098,AI identified general issue but fix command required syntax tuning or safety parameter adjustment.,"Standard ACL 10 filters source IP 192.168.1.50 but was applied inbound ('in') on G0/1 (WAN interface), where incoming packets have source IPs in 10.0.0.0/24 or public ranges.","Router-1(config)# interface GigabitEthernet0/1
+Router-1(config-if)# no ip access-group 10 in
+Router-1(config-if)# ip access-group 10 out"
+NET-026,Accepted,Network Operations Specialist,2026-08-30T09:48:19.881886,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,Traffic Blocked by ACL Implicit Deny: Traffic failed to match any permit statement in the ACL and hit implicit deny.,Add explicit permit rule for required protocol and port.
+NET-027,Accepted,Network Operations Specialist,2026-08-30T09:48:19.882358,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,ACL Rule Order Shadowing (Deny Before Permit): ACL rules evaluate top-down; broad deny prevents specific permit evaluation.,Reorder ACL to place specific permit rules before broad deny statements.
+NET-028,Rejected,Senior Tier-3 TAC Engineer,2026-08-30T09:48:19.882718,AI diagnosis contained critical failure: Missed wildcard mask inversion error. Rejected AI fix.,ACL 110 line 10 uses subnet mask '255.255.255.0' instead of wildcard mask '0.0.0.255'.,"Router-1(config)# ip access-list extended 110
+Router-1(config-ext-nacl)# no 10
+Router-1(config-ext-nacl)# 10 deny ip 192.168.20.0 0.0.0.255 host 10.0.0.5"
+NET-029,Accepted,Network Operations Specialist,2026-08-30T09:48:19.883886,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,Missing IP NAT Inside Designation: Router does not perform NAT without inside designation on LAN.,interface GigabitEthernet0/0; ip nat inside
+NET-030,Accepted,Network Operations Specialist,2026-08-30T09:48:19.884633,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,NAT Overload ACL LAN Subnet Mismatch: Packets from new LAN subnet do not match NAT ACL and are dropped.,access-list 5 permit 192.168.2.0 0.0.0.255
+NET-031,Accepted,Network Operations Specialist,2026-08-30T09:48:19.885281,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,Static NAT Target Inside Local IP Mismatch: Inbound connections translated to non-existent IP 192.168.1.100.,no ip nat inside source static 192.168.1.100 203.0.113.10; ip nat inside source static 192.168.1.10 203.0.113.10
+NET-032,Accepted,Network Operations Specialist,2026-08-30T09:48:19.886003,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,"NAT Pool Missing 'overload' Keyword (PAT): Without PAT (overload), dynamic NAT exhausts pool after 1:1 mapping.",ip nat inside source list 1 pool <name> overload
+NET-033,Rejected,Senior Tier-3 TAC Engineer,2026-08-30T09:48:19.886656,AI diagnosis contained critical failure: Security Policy Misdiagnosis (ignored VLAN 1 interface mapping). Rejected AI fix.,WLAN profile 'Guest-Access' is mapped to 'management' interface (VLAN 1) instead of the isolated 'guest' interface (VLAN 90).,"WLC-1(config)# wlan 2
+WLC-1(config-wlan)# interface-name guest-vlan90
+WLC-1(config-wlan)# end"
+NET-034,Accepted,Network Operations Specialist,2026-08-30T09:48:19.887464,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,Wireless Client Encryption Mismatch (TKIP vs AES): WPA2 handshake fails due to encryption algorithm mismatch.,Configure wireless client security profile to WPA2-Personal with AES.
+NET-035,Accepted,Network Operations Specialist,2026-08-30T09:48:19.888170,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,Multi-SSID Access Point Connected to Access Switchport: Access point cannot forward secondary SSID traffic (VLAN 30) across access port.,interface Fa0/12; switchport mode trunk; switchport trunk native vlan 10
+NET-036,Accepted,Network Operations Specialist,2026-08-30T09:48:19.888828,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,Interface Administratively Down (Shutdown): The interface Serial0/0/0 has been manually shut down with 'shutdown'.,interface Serial0/0/0; no shutdown
+NET-037,Accepted,Network Operations Specialist,2026-08-30T09:48:19.889532,Diagnosis is fully evidence-backed and Cisco IOS fix commands are accurate and verified.,MAC Address Flapping / Duplicate IP / L2 Loop: Multiple devices sharing identical IP/MAC address or active Layer 2 loop.,Verify static IP allocations on Fa0/2 and Fa0/10.
+CUSTOM-20260830-232134,Rejected,Senior TAC Engineer,2026-08-30T23:23:35.806542,Diagnosis verified against topology. Fix commands verified.,Port-security violation caused port to enter err-disabled state,"Switch-1(config)# interface FastEthernet0/10
+Switch-1(config-if)# shutdown
+Switch-1(config-if)# switchport port-security mac-address sticky
+Switch-1(config-if)# no shutdown"

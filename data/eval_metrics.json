@@ -1,0 +1,18 @@
+{
+  "evaluation_timestamp": "2026-08-30T09:48:19.891025",
+  "total_cases_evaluated": 37,
+  "rule_checker_coverage_rate": "100.0%",
+  "total_rule_findings": 39,
+  "osi_layer_accuracy_rate": "89.2%",
+  "high_confidence_ratio": "94.6%",
+  "human_review_summary": {
+    "total_cases": 37,
+    "total_reviewed": 37,
+    "accepted": 26,
+    "edited": 6,
+    "rejected": 5,
+    "pending": 0,
+    "agreement_rate": 70.3
+  },
+  "responsible_ai_failures_documented": 6
+}

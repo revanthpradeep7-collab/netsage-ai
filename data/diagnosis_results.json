@@ -1,0 +1,1476 @@
+[
+  {
+    "case_id": "NET-001",
+    "title": "VLAN Trunk Native VLAN Mismatch",
+    "concept_tag": "VLAN",
+    "severity": "High",
+    "expected_osi_layer": "Layer 2",
+    "diagnosed_osi_layer": "Layer 2",
+    "layer_match": true,
+    "expected_fault": "Trunk native VLAN mismatch between Switch-A (Native VLAN 1) and Switch-B (Native VLAN 99).",
+    "ai_root_cause": "[AI ERROR - Dangerous Remediation] Switch-B trunk native VLAN 99 is invalid. Native VLAN should always be forced to VLAN 1 on all switches.",
+    "confidence": "High",
+    "confidence_score": 0.89,
+    "evidence": [
+      "Switch-A# show interfaces trunk: Native vlan 1",
+      "Switch-B# show interfaces trunk: Native vlan 99"
+    ],
+    "fix_steps": [
+      "Switch-B(config)# interface GigabitEthernet0/1",
+      "Switch-B(config-if)# no switchport trunk native vlan",
+      "Switch-B(config-if)# exit"
+    ],
+    "verification_steps": [
+      "Switch-B# show interfaces trunk"
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L2-001",
+        "name": "Trunk Native VLAN Mismatch",
+        "category": "VLAN/Trunking",
+        "osi_layer": "Layer 2",
+        "severity": "High",
+        "evidence": "CDP Native VLAN mismatch: GigabitEthernet0/1 (VLAN 1) vs Switch-B GigabitEthernet0/1 (VLAN 99)",
+        "explanation": "Trunk links must share identical Native VLAN to prevent frame leak and STP loop.",
+        "suggested_fix": "interface GigabitEthernet0/1\n switchport trunk native vlan 99"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": true
+  },
+  {
+    "case_id": "NET-002",
+    "title": "Access VLAN Not Defined in VLAN Database",
+    "concept_tag": "VLAN",
+    "severity": "Medium",
+    "expected_osi_layer": "Layer 2",
+    "diagnosed_osi_layer": "Layer 2",
+    "layer_match": true,
+    "expected_fault": "VLAN 20 is assigned to Fa0/5 but does not exist in the switch VLAN database (status inactive).",
+    "ai_root_cause": "Access VLAN Missing in VLAN Database: VLAN 20 assigned to access port does not exist in vlan.dat.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Access Mode VLAN: 20 (inactive) in show interfaces switchport",
+      "Access Mode VLAN: 20 (inactive)"
+    ],
+    "fix_steps": [
+      "vlan 20",
+      "name VLAN_20",
+      "exit"
+    ],
+    "verification_steps": [
+      "Execute 'show interfaces trunk' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L2-002",
+        "name": "Access VLAN Missing in VLAN Database",
+        "category": "VLAN/Database",
+        "osi_layer": "Layer 2",
+        "severity": "Medium",
+        "evidence": "Access Mode VLAN: 20 (inactive) in show interfaces switchport",
+        "explanation": "VLAN 20 assigned to access port does not exist in vlan.dat.",
+        "suggested_fix": "vlan 20\n name VLAN_20\n exit"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-003",
+    "title": "Router-on-a-Stick Dot1Q Encapsulation Mismatch",
+    "concept_tag": "VLAN",
+    "severity": "High",
+    "expected_osi_layer": "Layer 2",
+    "diagnosed_osi_layer": "Layer 2",
+    "layer_match": true,
+    "expected_fault": "Router-1 subinterface G0/0.30 is tagged with encapsulation dot1Q 300 instead of dot1Q 30.",
+    "ai_root_cause": "Subinterface Dot1Q VLAN Tag Mismatch: Subinterface GigabitEthernet0/0.30 expects VLAN 300, but client is in VLAN 30.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Subinterface GigabitEthernet0/0.30 configured with dot1Q 300 (expected VLAN 30)"
+    ],
+    "fix_steps": [
+      "interface GigabitEthernet0/0.30",
+      "encapsulation dot1Q 30"
+    ],
+    "verification_steps": [
+      "Execute 'show interfaces trunk' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L2-004",
+        "name": "Subinterface Dot1Q VLAN Tag Mismatch",
+        "category": "Inter-VLAN Routing",
+        "osi_layer": "Layer 2",
+        "severity": "High",
+        "evidence": "Subinterface GigabitEthernet0/0.30 configured with dot1Q 300 (expected VLAN 30)",
+        "explanation": "Subinterface GigabitEthernet0/0.30 expects VLAN 300, but client is in VLAN 30.",
+        "suggested_fix": "interface GigabitEthernet0/0.30\n encapsulation dot1Q 30"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-004",
+    "title": "VLAN Pruned from Trunk Allowed List",
+    "concept_tag": "VLAN",
+    "severity": "Medium",
+    "expected_osi_layer": "Layer 2",
+    "diagnosed_osi_layer": "Layer 2",
+    "layer_match": true,
+    "expected_fault": "VLAN 40 is omitted from the switchport trunk allowed vlan list on interface Gig0/2.",
+    "ai_root_cause": "Required VLAN Pruned from Trunk Allowed List: Traffic for unallowed VLANs is blocked at 802.1Q trunk.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Port Gig0/2 trunk allowed list (10,20,99) omits required VLAN 40"
+    ],
+    "fix_steps": [
+      "interface Gig0/2",
+      "switchport trunk allowed vlan add 40"
+    ],
+    "verification_steps": [
+      "Execute 'show interfaces trunk' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L2-003",
+        "name": "Required VLAN Pruned from Trunk Allowed List",
+        "category": "VLAN/Trunking",
+        "osi_layer": "Layer 2",
+        "severity": "Medium",
+        "evidence": "Port Gig0/2 trunk allowed list (10,20,99) omits required VLAN 40",
+        "explanation": "Traffic for unallowed VLANs is blocked at 802.1Q trunk.",
+        "suggested_fix": "interface Gig0/2\n switchport trunk allowed vlan add 40"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-005",
+    "title": "Trunk Port Dynamic Trunking Protocol (DTP) Negotiation Failure",
+    "concept_tag": "VLAN",
+    "severity": "High",
+    "expected_osi_layer": "Layer 2",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": false,
+    "expected_fault": "Both ends of the link are set to dynamic auto, so neither end initiates trunk negotiation, defaulting to access mode.",
+    "ai_root_cause": "[AI ERROR - Hallucination & Destructive Command] Switchport Fa0/24 needs to be converted into a routed port by disabling switchport mode.",
+    "confidence": "High",
+    "confidence_score": 0.88,
+    "evidence": [
+      "Administrative Mode: dynamic auto",
+      "Operational Mode: static access"
+    ],
+    "fix_steps": [
+      "Switch-A(config)# interface FastEthernet0/24",
+      "Switch-A(config-if)# no switchport",
+      "Switch-A(config-if)# ip address 10.99.99.1 255.255.255.0",
+      "Switch-A(config)# interface GigabitEthernet0/99",
+      "Switch-A(config-if)# no shutdown"
+    ],
+    "verification_steps": [
+      "Switch-A# show ip interface brief"
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L2-005",
+        "name": "DTP Negotiation Failure (Dynamic Auto - Dynamic Auto)",
+        "category": "VLAN/Trunking",
+        "osi_layer": "Layer 2",
+        "severity": "High",
+        "evidence": "Administrative Mode: dynamic auto, Operational Mode: static access",
+        "explanation": "Both switchports set to dynamic auto, so neither initiates trunking.",
+        "suggested_fix": "interface <interface_id>\n switchport mode trunk"
+      }
+    ],
+    "safety_risk": "Critical",
+    "is_corrected_case": true
+  },
+  {
+    "case_id": "NET-006",
+    "title": "Host Default Gateway IP Misconfigured",
+    "concept_tag": "Gateway",
+    "severity": "High",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "PC-A default gateway is set to 192.168.1.254, but Router-1 LAN interface is 192.168.1.1.",
+    "ai_root_cause": "Host Default Gateway Mismatch: Host sending off-subnet packets to non-existent gateway 192.168.1.254.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Host gateway configured as 192.168.1.254, but router interface IP is 192.168.1.1"
+    ],
+    "fix_steps": [
+      "Set host default gateway to 192.168.1.1."
+    ],
+    "verification_steps": [
+      "Execute 'show ip interface brief' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-003",
+        "name": "Host Default Gateway Mismatch",
+        "category": "Gateway",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "Host gateway configured as 192.168.1.254, but router interface IP is 192.168.1.1",
+        "explanation": "Host sending off-subnet packets to non-existent gateway 192.168.1.254.",
+        "suggested_fix": "Set host default gateway to 192.168.1.1."
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-007",
+    "title": "HSRP Virtual IP and Group Mismatch",
+    "concept_tag": "Gateway",
+    "severity": "Critical",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "HSRP group mismatch: Router-1 is in HSRP group 10 (Virtual IP 10.1.1.1) while Router-2 is in group 20 (Virtual IP 10.1.1.254), resulting in dual active routers and no standby pairing.",
+    "ai_root_cause": "HSRP Group / Virtual IP Mismatch (Dual Active): Both routers enter Active state independently due to mismatched group/VIP.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Router-1 HSRP Grp 10 (VIP 10.1.1.1) vs Router-2 Grp 20 (VIP 10.1.1.254)"
+    ],
+    "fix_steps": [
+      "interface GigabitEthernet0/0",
+      "no standby 20",
+      "standby 10 ip 10.1.1.1"
+    ],
+    "verification_steps": [
+      "Execute 'show ip interface brief' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-005",
+        "name": "HSRP Group / Virtual IP Mismatch (Dual Active)",
+        "category": "First-Hop Redundancy",
+        "osi_layer": "Layer 3",
+        "severity": "Critical",
+        "evidence": "Router-1 HSRP Grp 10 (VIP 10.1.1.1) vs Router-2 Grp 20 (VIP 10.1.1.254)",
+        "explanation": "Both routers enter Active state independently due to mismatched group/VIP.",
+        "suggested_fix": "interface GigabitEthernet0/0\n no standby 20\n standby 10 ip 10.1.1.1"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-008",
+    "title": "Switch Management IP Default Gateway Missing",
+    "concept_tag": "Gateway",
+    "severity": "Medium",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "Switch-3 is missing the 'ip default-gateway 10.99.1.1' configuration, making it unable to reply to management traffic from remote subnets.",
+    "ai_root_cause": "Switch Management Default Gateway Missing: Switch SVI cannot respond to management traffic from remote subnets.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Switch running-config lacks 'ip default-gateway'"
+    ],
+    "fix_steps": [
+      "ip default-gateway 10.99.1.1"
+    ],
+    "verification_steps": [
+      "Execute 'show interfaces trunk' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-004",
+        "name": "Switch Management Default Gateway Missing",
+        "category": "Gateway",
+        "osi_layer": "Layer 3",
+        "severity": "Medium",
+        "evidence": "Switch running-config lacks 'ip default-gateway'",
+        "explanation": "Switch SVI cannot respond to management traffic from remote subnets.",
+        "suggested_fix": "ip default-gateway 10.99.1.1"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-009",
+    "title": "Subnet Mask Mismatch on Point-to-Point Link",
+    "concept_tag": "Gateway",
+    "severity": "High",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "Subnet mask mismatch on point-to-point link: Router-A has /30 (255.255.255.252) while Router-B has /24 (255.255.255.0).",
+    "ai_root_cause": "Subnet Mask Mismatch on Point-to-Point Link: Directly connected router interfaces must share identical subnet masks.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Router-A has 172.16.0.1/30 vs Router-B with 172.16.0.2/24"
+    ],
+    "fix_steps": [
+      "interface <interface>",
+      "ip address 172.16.0.2 255.255.255.252"
+    ],
+    "verification_steps": [
+      "Execute 'show ip ospf neighbor' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-002",
+        "name": "Subnet Mask Mismatch on Point-to-Point Link",
+        "category": "IP Addressing",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "Router-A has 172.16.0.1/30 vs Router-B with 172.16.0.2/24",
+        "explanation": "Directly connected router interfaces must share identical subnet masks.",
+        "suggested_fix": "interface <interface>\n ip address 172.16.0.2 255.255.255.252"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-010",
+    "title": "Missing IP Helper-Address for Remote DHCP Relay",
+    "concept_tag": "DHCP",
+    "severity": "High",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "Router-1 subinterface G0/0.10 is missing 'ip helper-address 192.168.50.2' to relay DHCP broadcast requests across subnets.",
+    "ai_root_cause": "Missing IP Helper-Address for DHCP Relay: DHCP broadcast requests cannot cross subinterfaces without relay agent.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Router subinterface running-config lacks 'ip helper-address <server_ip>'"
+    ],
+    "fix_steps": [
+      "interface <subinterface>",
+      "ip helper-address <dhcp_server_ip>"
+    ],
+    "verification_steps": [
+      "Execute 'show interfaces trunk' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-014",
+        "name": "Missing IP Helper-Address for DHCP Relay",
+        "category": "DHCP",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "Router subinterface running-config lacks 'ip helper-address <server_ip>'",
+        "explanation": "DHCP broadcast requests cannot cross subinterfaces without relay agent.",
+        "suggested_fix": "interface <subinterface>\n ip helper-address <dhcp_server_ip>"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-011",
+    "title": "DHCP Scope Pool Range Exhaustion",
+    "concept_tag": "DHCP",
+    "severity": "Medium",
+    "expected_osi_layer": "Layer 7",
+    "diagnosed_osi_layer": "Layer 7",
+    "layer_match": true,
+    "expected_fault": "DHCP address pool FLOOR2 is completely exhausted (100% utilization) due to overly restrictive /28 subnet mask.",
+    "ai_root_cause": "DHCP Scope / Pool Address Exhaustion: The configured DHCP subnet has no remaining IP leases available.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "show ip dhcp pool indicates 100% utilization (all addresses leased)",
+      "Utilization mark (high/low)    : 100 / 0"
+    ],
+    "fix_steps": [
+      "ip dhcp pool <name>",
+      "network <larger_subnet> <mask_or_prefix>"
+    ],
+    "verification_steps": [
+      "Execute 'show ip dhcp binding' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L7-001",
+        "name": "DHCP Scope / Pool Address Exhaustion",
+        "category": "DHCP",
+        "osi_layer": "Layer 7",
+        "severity": "Medium",
+        "evidence": "show ip dhcp pool indicates 100% utilization (all addresses leased)",
+        "explanation": "The configured DHCP subnet has no remaining IP leases available.",
+        "suggested_fix": "ip dhcp pool <name>\n network <larger_subnet> <mask_or_prefix>"
+      }
+    ],
+    "safety_risk": "Low",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-012",
+    "title": "Missing DHCP Excluded Addresses Causing Gateway IP Conflict",
+    "concept_tag": "DHCP",
+    "severity": "Critical",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "DHCP server leased the router's own IP address (192.168.1.1) to a host because no 'ip dhcp excluded-address' was configured.",
+    "ai_root_cause": "Inverted Wildcard Mask in Routing Statement: Cisco OSPF requires wildcard bits where 0 is match and 255 is ignore.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Network statement uses subnet mask '255.255.255.0' instead of wildcard '0.0.0.255'"
+    ],
+    "fix_steps": [
+      "no network <ip> 255.255.255.0 area <area>",
+      "network <ip> 0.0.0.255 area <area>"
+    ],
+    "verification_steps": [
+      "Execute 'show ip access-lists' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-009",
+        "name": "Inverted Wildcard Mask in Routing Statement",
+        "category": "Routing/OSPF",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "Network statement uses subnet mask '255.255.255.0' instead of wildcard '0.0.0.255'",
+        "explanation": "Cisco OSPF requires wildcard bits where 0 is match and 255 is ignore.",
+        "suggested_fix": "no network <ip> 255.255.255.0 area <area>\n network <ip> 0.0.0.255 area <area>"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-013",
+    "title": "DHCP Pool Incorrect Default Gateway (Option 3)",
+    "concept_tag": "DHCP",
+    "severity": "High",
+    "expected_osi_layer": "Layer 7",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": false,
+    "expected_fault": "DHCP pool default-router option is configured with 192.168.1.100 instead of active router interface 192.168.1.1.",
+    "ai_root_cause": "Inverted Wildcard Mask in Routing Statement: Cisco OSPF requires wildcard bits where 0 is match and 255 is ignore.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Network statement uses subnet mask '255.255.255.0' instead of wildcard '0.0.0.255'"
+    ],
+    "fix_steps": [
+      "no network <ip> 255.255.255.0 area <area>",
+      "network <ip> 0.0.0.255 area <area>"
+    ],
+    "verification_steps": [
+      "Execute 'show ip dhcp binding' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 2,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-009",
+        "name": "Inverted Wildcard Mask in Routing Statement",
+        "category": "Routing/OSPF",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "Network statement uses subnet mask '255.255.255.0' instead of wildcard '0.0.0.255'",
+        "explanation": "Cisco OSPF requires wildcard bits where 0 is match and 255 is ignore.",
+        "suggested_fix": "no network <ip> 255.255.255.0 area <area>\n network <ip> 0.0.0.255 area <area>"
+      },
+      {
+        "rule_id": "RULE-L7-003",
+        "name": "DHCP Default-Router (Option 3) IP Mismatch",
+        "category": "DHCP",
+        "osi_layer": "Layer 7",
+        "severity": "High",
+        "evidence": "DHCP pool default-router is set to 192.168.1.100 instead of router IP 192.168.1.1",
+        "explanation": "DHCP clients receive invalid default gateway IP.",
+        "suggested_fix": "ip dhcp pool <name>\n default-router 192.168.1.1"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-014",
+    "title": "DHCP Snooping Untrusted Uplink Port",
+    "concept_tag": "DHCP",
+    "severity": "High",
+    "expected_osi_layer": "Layer 2",
+    "diagnosed_osi_layer": "Layer 2",
+    "layer_match": true,
+    "expected_fault": "Switch-1 interface Gig0/1 connecting to the legitimate DHCP server is untrusted in DHCP snooping, causing DHCP OFFERs to be dropped.",
+    "ai_root_cause": "DHCP Snooping Untrusted Uplink Port: DHCP Server replies arriving on untrusted ports are dropped by switch.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "GigabitEthernet0/1 Trusted: no with Packets Dropped > 0",
+      "Packets Dropped = 24"
+    ],
+    "fix_steps": [
+      "interface GigabitEthernet0/1",
+      "ip dhcp snooping trust"
+    ],
+    "verification_steps": [
+      "Execute 'show interfaces trunk' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L2-007",
+        "name": "DHCP Snooping Untrusted Uplink Port",
+        "category": "DHCP/Security",
+        "osi_layer": "Layer 2",
+        "severity": "High",
+        "evidence": "GigabitEthernet0/1 Trusted: no with Packets Dropped > 0",
+        "explanation": "DHCP Server replies arriving on untrusted ports are dropped by switch.",
+        "suggested_fix": "interface GigabitEthernet0/1\n ip dhcp snooping trust"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-015",
+    "title": "Client Wrong DNS Server Configuration",
+    "concept_tag": "DNS",
+    "severity": "Medium",
+    "expected_osi_layer": "Layer 7",
+    "diagnosed_osi_layer": "Layer 7",
+    "layer_match": true,
+    "expected_fault": "Host PC-1 is statically configured with non-existent DNS server IP 192.168.1.200 instead of active DNS server 192.168.1.2.",
+    "ai_root_cause": "[AI ERROR - Wrong Layer Attribution] The DNS Server service at 192.168.1.200 has crashed and requires service restart on port 53.",
+    "confidence": "High",
+    "confidence_score": 0.93,
+    "evidence": [
+      "*** Can't find address for server 192.168.1.200: Timed out",
+      "PC-1 can ping 93.184.216.34"
+    ],
+    "fix_steps": [
+      "On DNS Server: Restart DNS service and bind to 192.168.1.200",
+      "PC-1> ipconfig /flushdns"
+    ],
+    "verification_steps": [
+      "PC-1> nslookup www.example.com"
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L7-002",
+        "name": "DNS Resolution Failure / Inactive DNS Server",
+        "category": "DNS/Application",
+        "osi_layer": "Layer 7",
+        "severity": "Medium",
+        "evidence": "nslookup failed or DNS Service is OFF on server",
+        "explanation": "Client is pointing to invalid DNS server IP or DNS service is inactive.",
+        "suggested_fix": "Configure client DNS server to valid server IP and ensure DNS service is ON."
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": true
+  },
+  {
+    "case_id": "NET-016",
+    "title": "DNS Server Service Disabled / Record Missing",
+    "concept_tag": "DNS",
+    "severity": "Medium",
+    "expected_osi_layer": "Layer 7",
+    "diagnosed_osi_layer": "Layer 7",
+    "layer_match": true,
+    "expected_fault": "DNS Server service is turned OFF in Server configuration, and missing A record for 'intranet.corp'.",
+    "ai_root_cause": "DNS Resolution Failure / Inactive DNS Server: Client is pointing to invalid DNS server IP or DNS service is inactive.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "nslookup failed or DNS Service is OFF on server"
+    ],
+    "fix_steps": [
+      "Configure client DNS server to valid server IP and ensure DNS service is ON."
+    ],
+    "verification_steps": [
+      "Execute 'show ip interface brief' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L7-002",
+        "name": "DNS Resolution Failure / Inactive DNS Server",
+        "category": "DNS/Application",
+        "osi_layer": "Layer 7",
+        "severity": "Medium",
+        "evidence": "nslookup failed or DNS Service is OFF on server",
+        "explanation": "Client is pointing to invalid DNS server IP or DNS service is inactive.",
+        "suggested_fix": "Configure client DNS server to valid server IP and ensure DNS service is ON."
+      }
+    ],
+    "safety_risk": "Low",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-017",
+    "title": "Missing Default Static Route on Edge Router",
+    "concept_tag": "Routing",
+    "severity": "High",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "Branch-Router has no default static route ('Gateway of last resort is not set') pointing to next-hop ISP gateway 203.0.113.1.",
+    "ai_root_cause": "Missing Default Static Route (Gateway of Last Resort): Router drops packets destined for non-local external networks.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "show ip route indicates 'Gateway of last resort is not set'"
+    ],
+    "fix_steps": [
+      "ip route 0.0.0.0 0.0.0.0 <next_hop_ip>"
+    ],
+    "verification_steps": [
+      "Execute 'show ip nat translations' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-006",
+        "name": "Missing Default Static Route (Gateway of Last Resort)",
+        "category": "Routing",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "show ip route indicates 'Gateway of last resort is not set'",
+        "explanation": "Router drops packets destined for non-local external networks.",
+        "suggested_fix": "ip route 0.0.0.0 0.0.0.0 <next_hop_ip>"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-018",
+    "title": "OSPF Area ID Mismatch on Point-to-Point Link",
+    "concept_tag": "Routing",
+    "severity": "High",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "OSPF Area ID mismatch: Router-1 interface is in Area 0 while Router-2 interface is in Area 1.",
+    "ai_root_cause": "OSPF Area ID Mismatch: OSPF neighbors must be in the same Area ID on common link.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Router-1 in Area 0 vs Router-2 in Area 1"
+    ],
+    "fix_steps": [
+      "router ospf 1",
+      "network <subnet> <wildcard> area 0"
+    ],
+    "verification_steps": [
+      "Execute 'show ip ospf neighbor' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-008",
+        "name": "OSPF Area ID Mismatch",
+        "category": "Routing/OSPF",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "Router-1 in Area 0 vs Router-2 in Area 1",
+        "explanation": "OSPF neighbors must be in the same Area ID on common link.",
+        "suggested_fix": "router ospf 1\n network <subnet> <wildcard> area 0"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-019",
+    "title": "OSPF Inverted Wildcard Mask in Network Statement",
+    "concept_tag": "Routing",
+    "severity": "High",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "OSPF network command used subnet mask 255.255.255.0 instead of wildcard mask 0.0.0.255, failing to match interface Gi0/1.",
+    "ai_root_cause": "Inverted Wildcard Mask in Routing Statement: Cisco OSPF requires wildcard bits where 0 is match and 255 is ignore.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Network statement uses subnet mask '255.255.255.0' instead of wildcard '0.0.0.255'"
+    ],
+    "fix_steps": [
+      "no network <ip> 255.255.255.0 area <area>",
+      "network <ip> 0.0.0.255 area <area>"
+    ],
+    "verification_steps": [
+      "Execute 'show ip ospf neighbor' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-009",
+        "name": "Inverted Wildcard Mask in Routing Statement",
+        "category": "Routing/OSPF",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "Network statement uses subnet mask '255.255.255.0' instead of wildcard '0.0.0.255'",
+        "explanation": "Cisco OSPF requires wildcard bits where 0 is match and 255 is ignore.",
+        "suggested_fix": "no network <ip> 255.255.255.0 area <area>\n network <ip> 0.0.0.255 area <area>"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-020",
+    "title": "OSPF Hello and Dead Timer Mismatch",
+    "concept_tag": "Routing",
+    "severity": "Medium",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "OSPF Hello/Dead timer mismatch: R1 is using 10/40 seconds while R2 is using 5/20 seconds.",
+    "ai_root_cause": "OSPF Hello/Dead Timer Mismatch: OSPF Hello and Dead intervals must match for adjacency.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Local timer (10/40s) vs Remote timer (5/20s)"
+    ],
+    "fix_steps": [
+      "interface <iface>",
+      "ip ospf hello-interval 10",
+      "ip ospf dead-interval 40"
+    ],
+    "verification_steps": [
+      "Execute 'show ip ospf neighbor' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-010",
+        "name": "OSPF Hello/Dead Timer Mismatch",
+        "category": "Routing/OSPF",
+        "osi_layer": "Layer 3",
+        "severity": "Medium",
+        "evidence": "Local timer (10/40s) vs Remote timer (5/20s)",
+        "explanation": "OSPF Hello and Dead intervals must match for adjacency.",
+        "suggested_fix": "interface <iface>\n ip ospf hello-interval 10\n ip ospf dead-interval 40"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-021",
+    "title": "OSPF Passive-Interface Misconfigured on Routing Link",
+    "concept_tag": "Routing",
+    "severity": "High",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "Interface GigabitEthernet0/0 (the transit link to R-CORE) is configured as passive-interface, suppressing OSPF Hellos.",
+    "ai_root_cause": "OSPF Passive-Interface Configured on Neighbor Link: Passive-interface suppresses OSPF Hellos on transit link.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "passive-interface GigabitEthernet0/0 applied to transit routing link"
+    ],
+    "fix_steps": [
+      "router ospf 1",
+      "no passive-interface GigabitEthernet0/0"
+    ],
+    "verification_steps": [
+      "Execute 'show ip ospf neighbor' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-011",
+        "name": "OSPF Passive-Interface Configured on Neighbor Link",
+        "category": "Routing/OSPF",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "passive-interface GigabitEthernet0/0 applied to transit routing link",
+        "explanation": "Passive-interface suppresses OSPF Hellos on transit link.",
+        "suggested_fix": "router ospf 1\n no passive-interface GigabitEthernet0/0"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-022",
+    "title": "Asymmetric Routing / Missing Return Static Route",
+    "concept_tag": "Routing",
+    "severity": "High",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 4",
+    "layer_match": false,
+    "expected_fault": "Router-B lacks a return route for Site-A subnet 192.168.10.0/24, causing reply packets to be dropped at Router-B.",
+    "ai_root_cause": "[AI ERROR - Overconfidence / Misattribution] The firewall or access list on Router-A is silently dropping ICMP echo replies from Site-B Server.",
+    "confidence": "High",
+    "confidence_score": 0.91,
+    "evidence": [
+      "Router-A show ip route has valid route to 10.20.30.0/24",
+      "Site-A PC sends packets but never receives replies"
+    ],
+    "fix_steps": [
+      "Router-A(config)# ip access-list extended ALLOW_ALL",
+      "Router-A(config-ext-nacl)# permit ip any any",
+      "Router-A(config)# interface GigabitEthernet0/0",
+      "Router-A(config-if)# ip access-group ALLOW_ALL in"
+    ],
+    "verification_steps": [
+      "Site-A# ping 10.20.30.100"
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-007",
+        "name": "Asymmetric Routing / Missing Return Path Route",
+        "category": "Routing",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "Remote router routing table contains no route back to source subnet",
+        "explanation": "Return traffic dropped at remote router due to missing static/dynamic route.",
+        "suggested_fix": "ip route 192.168.10.0 255.255.255.0 <next_hop_ip>"
+      }
+    ],
+    "safety_risk": "High",
+    "is_corrected_case": true
+  },
+  {
+    "case_id": "NET-023",
+    "title": "RIPv2 Auto-Summary Discontiguous Subnet Drop",
+    "concept_tag": "Routing",
+    "severity": "Medium",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "RIPv2 automatic summarization is enabled, summarizing discontiguous /24 subnets into a single 172.16.0.0/16 classful route.",
+    "ai_root_cause": "RIPv2 Auto-Summary Enabled on Discontiguous Subnets: RIP auto-summarizes classful network boundaries.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Automatic network summarization is in effect in show ip protocols"
+    ],
+    "fix_steps": [
+      "router rip",
+      "no auto-summary"
+    ],
+    "verification_steps": [
+      "Execute 'show ip interface brief' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-013",
+        "name": "RIPv2 Auto-Summary Enabled on Discontiguous Subnets",
+        "category": "Routing/RIP",
+        "osi_layer": "Layer 3",
+        "severity": "Medium",
+        "evidence": "Automatic network summarization is in effect in show ip protocols",
+        "explanation": "RIP auto-summarizes classful network boundaries.",
+        "suggested_fix": "router rip\n no auto-summary"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-024",
+    "title": "EIGRP Autonomous System (AS) Number Mismatch",
+    "concept_tag": "Routing",
+    "severity": "High",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "EIGRP AS number mismatch: R1 is running EIGRP AS 100 while R2 is running EIGRP AS 200.",
+    "ai_root_cause": "EIGRP Autonomous System (AS) Mismatch: EIGRP routers must be configured with matching AS numbers.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "R1 running EIGRP AS 100 vs R2 running EIGRP AS 200"
+    ],
+    "fix_steps": [
+      "no router eigrp 200",
+      "router eigrp 100"
+    ],
+    "verification_steps": [
+      "Execute 'show ip interface brief' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-012",
+        "name": "EIGRP Autonomous System (AS) Mismatch",
+        "category": "Routing/EIGRP",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "R1 running EIGRP AS 100 vs R2 running EIGRP AS 200",
+        "explanation": "EIGRP routers must be configured with matching AS numbers.",
+        "suggested_fix": "no router eigrp 200\n router eigrp 100"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-025",
+    "title": "Standard ACL Applied in Wrong Direction",
+    "concept_tag": "ACL",
+    "severity": "Medium",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "Standard ACL 10 filters source IP 192.168.1.50 but was applied inbound ('in') on G0/1 (WAN interface), where incoming packets have source IPs in 10.0.0.0/24 or public ranges.",
+    "ai_root_cause": "Standard ACL Applied Inbound on WAN Interface: Standard ACLs match source IP; inbound on WAN they filter foreign IPs.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Standard ACL filtering source LAN IP applied inbound on WAN interface G0/1"
+    ],
+    "fix_steps": [
+      "interface GigabitEthernet0/1",
+      "no ip access-group 10 in",
+      "ip access-group 10 out"
+    ],
+    "verification_steps": [
+      "Execute 'show ip access-lists' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-017",
+        "name": "Standard ACL Applied Inbound on WAN Interface",
+        "category": "ACL",
+        "osi_layer": "Layer 3",
+        "severity": "Medium",
+        "evidence": "Standard ACL filtering source LAN IP applied inbound on WAN interface G0/1",
+        "explanation": "Standard ACLs match source IP; inbound on WAN they filter foreign IPs.",
+        "suggested_fix": "interface GigabitEthernet0/1\n no ip access-group 10 in\n ip access-group 10 out"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-026",
+    "title": "Extended ACL Implicit Deny Blocking Legitimate Web Traffic",
+    "concept_tag": "ACL",
+    "severity": "Medium",
+    "expected_osi_layer": "Layer 4",
+    "diagnosed_osi_layer": "Layer 4",
+    "layer_match": true,
+    "expected_fault": "ACL 101 permits HTTPS (port 443) but lacks a permit statement for HTTP (port 80), hitting the implicit deny.",
+    "ai_root_cause": "Traffic Blocked by ACL Implicit Deny: Traffic failed to match any permit statement in the ACL and hit implicit deny.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Implicit deny ip any any has active match count in show ip access-lists"
+    ],
+    "fix_steps": [
+      "Add explicit permit rule for required protocol and port."
+    ],
+    "verification_steps": [
+      "Execute 'show ip interface brief' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L4-001",
+        "name": "Traffic Blocked by ACL Implicit Deny",
+        "category": "ACL/Security",
+        "osi_layer": "Layer 4",
+        "severity": "Medium",
+        "evidence": "Implicit deny ip any any has active match count in show ip access-lists",
+        "explanation": "Traffic failed to match any permit statement in the ACL and hit implicit deny.",
+        "suggested_fix": "Add explicit permit rule for required protocol and port."
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-027",
+    "title": "ACL Rule Order Shadowing Specific Permit",
+    "concept_tag": "ACL",
+    "severity": "Medium",
+    "expected_osi_layer": "Layer 4",
+    "diagnosed_osi_layer": "Layer 4",
+    "layer_match": true,
+    "expected_fault": "Broad deny rule (line 10) shadows and precedes specific permit rule (line 20), denying Host 192.168.10.5 before line 20 is ever evaluated.",
+    "ai_root_cause": "ACL Rule Order Shadowing (Deny Before Permit): ACL rules evaluate top-down; broad deny prevents specific permit evaluation.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Line 10 broad deny precedes line 20 specific host permit"
+    ],
+    "fix_steps": [
+      "Reorder ACL to place specific permit rules before broad deny statements."
+    ],
+    "verification_steps": [
+      "Execute 'show ip access-lists' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L4-002",
+        "name": "ACL Rule Order Shadowing (Deny Before Permit)",
+        "category": "ACL/Security",
+        "osi_layer": "Layer 4",
+        "severity": "Medium",
+        "evidence": "Line 10 broad deny precedes line 20 specific host permit",
+        "explanation": "ACL rules evaluate top-down; broad deny prevents specific permit evaluation.",
+        "suggested_fix": "Reorder ACL to place specific permit rules before broad deny statements."
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-028",
+    "title": "Inverted Wildcard Mask in Extended ACL",
+    "concept_tag": "ACL",
+    "severity": "Medium",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "ACL 110 line 10 uses subnet mask '255.255.255.0' instead of wildcard mask '0.0.0.255'.",
+    "ai_root_cause": "[AI ERROR - Incomplete Mask Parsing] The ACL rule is inactive because interface G0/1 has not enabled ip routing.",
+    "confidence": "Medium",
+    "confidence_score": 0.7,
+    "evidence": [
+      "ACL 110 line 10 deny ip 192.168.20.0 255.255.255.0 host 10.0.0.5",
+      "20 permit ip any any (241 matches)"
+    ],
+    "fix_steps": [
+      "Router-1(config)# ip routing",
+      "Router-1(config)# interface GigabitEthernet0/1",
+      "Router-1(config-if)# ip access-group 110 in"
+    ],
+    "verification_steps": [
+      "Router-1# show ip access-lists 110"
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-018",
+        "name": "Inverted Wildcard Mask in Access Control List",
+        "category": "ACL",
+        "osi_layer": "Layer 3",
+        "severity": "Medium",
+        "evidence": "ACL rule uses subnet mask 255.255.255.0 instead of wildcard mask 0.0.0.255",
+        "explanation": "Using 255.255.255.0 causes only host .0 to be matched in ACL.",
+        "suggested_fix": "Replace 255.255.255.0 with 0.0.0.255 in ACL entry."
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": true
+  },
+  {
+    "case_id": "NET-029",
+    "title": "Missing IP NAT Inside/Outside Interface Designation",
+    "concept_tag": "NAT",
+    "severity": "High",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "Interface GigabitEthernet0/0 is missing 'ip nat inside' configuration.",
+    "ai_root_cause": "Missing IP NAT Inside Designation: Router does not perform NAT without inside designation on LAN.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "LAN interface GigabitEthernet0/0 lacks 'ip nat inside'"
+    ],
+    "fix_steps": [
+      "interface GigabitEthernet0/0",
+      "ip nat inside"
+    ],
+    "verification_steps": [
+      "Execute 'show ip nat translations' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-015",
+        "name": "Missing IP NAT Inside Designation",
+        "category": "NAT",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "LAN interface GigabitEthernet0/0 lacks 'ip nat inside'",
+        "explanation": "Router does not perform NAT without inside designation on LAN.",
+        "suggested_fix": "interface GigabitEthernet0/0\n ip nat inside"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-030",
+    "title": "NAT Overload ACL Subnet Mismatch",
+    "concept_tag": "NAT",
+    "severity": "High",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "NAT ACL 5 permits old subnet 192.168.1.0/24 instead of the active LAN subnet 192.168.2.0/24.",
+    "ai_root_cause": "NAT Overload ACL LAN Subnet Mismatch: Packets from new LAN subnet do not match NAT ACL and are dropped.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "NAT ACL permits 192.168.1.0/24 but active LAN is 192.168.2.1/24"
+    ],
+    "fix_steps": [
+      "access-list 5 permit 192.168.2.0 0.0.0.255"
+    ],
+    "verification_steps": [
+      "Execute 'show ip nat translations' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-019",
+        "name": "NAT Overload ACL LAN Subnet Mismatch",
+        "category": "NAT",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "NAT ACL permits 192.168.1.0/24 but active LAN is 192.168.2.1/24",
+        "explanation": "Packets from new LAN subnet do not match NAT ACL and are dropped.",
+        "suggested_fix": "access-list 5 permit 192.168.2.0 0.0.0.255"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-031",
+    "title": "Static NAT Local IP Mapping Error",
+    "concept_tag": "NAT",
+    "severity": "High",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "Static NAT rule maps public IP 203.0.113.10 to 192.168.1.100 instead of the real server address 192.168.1.10.",
+    "ai_root_cause": "Static NAT Target Inside Local IP Mismatch: Inbound connections translated to non-existent IP 192.168.1.100.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Static NAT maps to 192.168.1.100 but internal server IP is 192.168.1.10"
+    ],
+    "fix_steps": [
+      "no ip nat inside source static 192.168.1.100 203.0.113.10",
+      "ip nat inside source static 192.168.1.10 203.0.113.10"
+    ],
+    "verification_steps": [
+      "Execute 'show ip interface brief' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-020",
+        "name": "Static NAT Target Inside Local IP Mismatch",
+        "category": "NAT",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "Static NAT maps to 192.168.1.100 but internal server IP is 192.168.1.10",
+        "explanation": "Inbound connections translated to non-existent IP 192.168.1.100.",
+        "suggested_fix": "no ip nat inside source static 192.168.1.100 203.0.113.10\nip nat inside source static 192.168.1.10 203.0.113.10"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-032",
+    "title": "NAT Pool Exhaustion Missing Overload Keyword",
+    "concept_tag": "NAT",
+    "severity": "High",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 3",
+    "layer_match": true,
+    "expected_fault": "NAT pool configuration is missing the 'overload' (PAT) keyword, causing 1-to-1 dynamic NAT to consume all pool IPs after 2 connections.",
+    "ai_root_cause": "NAT Pool Missing 'overload' Keyword (PAT): Without PAT (overload), dynamic NAT exhausts pool after 1:1 mapping.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "ip nat inside source statement lacks 'overload' keyword",
+      "type generic, total addresses 2, allocated 2 (100%)"
+    ],
+    "fix_steps": [
+      "ip nat inside source list 1 pool <name> overload"
+    ],
+    "verification_steps": [
+      "Execute 'show ip access-lists' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L3-016",
+        "name": "NAT Pool Missing 'overload' Keyword (PAT)",
+        "category": "NAT",
+        "osi_layer": "Layer 3",
+        "severity": "High",
+        "evidence": "ip nat inside source statement lacks 'overload' keyword",
+        "explanation": "Without PAT (overload), dynamic NAT exhausts pool after 1:1 mapping.",
+        "suggested_fix": "ip nat inside source list 1 pool <name> overload"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-033",
+    "title": "Guest Wi-Fi VLAN Isolation Security Breach",
+    "concept_tag": "Wireless",
+    "severity": "Critical",
+    "expected_osi_layer": "Layer 2",
+    "diagnosed_osi_layer": "Layer 2",
+    "layer_match": true,
+    "expected_fault": "WLAN profile 'Guest-Access' is mapped to 'management' interface (VLAN 1) instead of the isolated 'guest' interface (VLAN 90).",
+    "ai_root_cause": "[AI ERROR - Misdiagnosis / Incomplete Evidence] Guest users are connecting with corporate WPA2 credentials rather than guest splash portal.",
+    "confidence": "Medium",
+    "confidence_score": 0.65,
+    "evidence": [
+      "WLAN ID 2 Guest-Access / Company-Guest Enabled",
+      "Guest Wi-Fi users can ping internal accounting servers"
+    ],
+    "fix_steps": [
+      "WLC-1(config)# wlan 2",
+      "WLC-1(config-wlan)# security wpa akm 802.1x",
+      "WLC-1(config-wlan)# end"
+    ],
+    "verification_steps": [
+      "WLC-1# show wlan summary"
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L2-008",
+        "name": "Guest Wi-Fi Mapped to Management VLAN (Security Leak)",
+        "category": "Wireless/Security",
+        "osi_layer": "Layer 2",
+        "severity": "Critical",
+        "evidence": "WLAN profile 'Guest-Access' mapped to interface 'management (1)'",
+        "explanation": "Guest Wi-Fi traffic placed onto sensitive Management VLAN 1.",
+        "suggested_fix": "wlan 2\n interface-name guest-vlan90"
+      }
+    ],
+    "safety_risk": "High",
+    "is_corrected_case": true
+  },
+  {
+    "case_id": "NET-034",
+    "title": "Wireless Client WPA2 Pre-Shared Key / Auth Mismatch",
+    "concept_tag": "Wireless",
+    "severity": "Medium",
+    "expected_osi_layer": "Layer 2",
+    "diagnosed_osi_layer": "Layer 2",
+    "layer_match": true,
+    "expected_fault": "Laptop-1 encryption and security profile is configured for WPA-TKIP instead of WPA2-AES / PSK as enforced by AP-Warehouse.",
+    "ai_root_cause": "Wireless Client Encryption Mismatch (TKIP vs AES): WPA2 handshake fails due to encryption algorithm mismatch.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "AP enforces WPA2-AES (CCMP) while client profile configured for WPA-TKIP",
+      "Pre-Shared Key: [Mismatch / TKIP chosen instead of AES]"
+    ],
+    "fix_steps": [
+      "Configure wireless client security profile to WPA2-Personal with AES."
+    ],
+    "verification_steps": [
+      "Execute 'show interfaces trunk' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L2-009",
+        "name": "Wireless Client Encryption Mismatch (TKIP vs AES)",
+        "category": "Wireless",
+        "osi_layer": "Layer 2",
+        "severity": "Medium",
+        "evidence": "AP enforces WPA2-AES (CCMP) while client profile configured for WPA-TKIP",
+        "explanation": "WPA2 handshake fails due to encryption algorithm mismatch.",
+        "suggested_fix": "Configure wireless client security profile to WPA2-Personal with AES."
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-035",
+    "title": "Access Point Switchport Configured as Access Instead of Trunk",
+    "concept_tag": "Wireless",
+    "severity": "High",
+    "expected_osi_layer": "Layer 2",
+    "diagnosed_osi_layer": "Layer 2",
+    "layer_match": true,
+    "expected_fault": "Switchport Fa0/12 connecting to multi-VLAN Access Point is configured in access mode (VLAN 10), dropping tagged frames for VLAN 30.",
+    "ai_root_cause": "Multi-SSID Access Point Connected to Access Switchport: Access point cannot forward secondary SSID traffic (VLAN 30) across access port.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Switchport Fa0/12 is configured in static access mode for multi-SSID AP"
+    ],
+    "fix_steps": [
+      "interface Fa0/12",
+      "switchport mode trunk",
+      "switchport trunk native vlan 10"
+    ],
+    "verification_steps": [
+      "Execute 'show interfaces trunk' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L2-010",
+        "name": "Multi-SSID Access Point Connected to Access Switchport",
+        "category": "Wireless/VLAN",
+        "osi_layer": "Layer 2",
+        "severity": "High",
+        "evidence": "Switchport Fa0/12 is configured in static access mode for multi-SSID AP",
+        "explanation": "Access point cannot forward secondary SSID traffic (VLAN 30) across access port.",
+        "suggested_fix": "interface Fa0/12\n switchport mode trunk\n switchport trunk native vlan 10"
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-036",
+    "title": "Core Router Interface Administratively Shutdown",
+    "concept_tag": "Physical/Interface",
+    "severity": "Critical",
+    "expected_osi_layer": "Layer 1",
+    "diagnosed_osi_layer": "Layer 1",
+    "layer_match": true,
+    "expected_fault": "Interface Serial0/0/0 on Router-Core is administratively down (shutdown).",
+    "ai_root_cause": "Interface Administratively Down (Shutdown): The interface Serial0/0/0 has been manually shut down with 'shutdown'.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "Interface Serial0/0/0 is administratively down (protocol down)",
+      "Serial0/0/0            10.1.1.1        YES manual administratively down down",
+      "Serial0/0/1            unassigned      YES unset  administratively down down"
+    ],
+    "fix_steps": [
+      "interface Serial0/0/0",
+      "no shutdown"
+    ],
+    "verification_steps": [
+      "Execute 'show ip interface brief' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 2,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L1-001",
+        "name": "Interface Administratively Down (Shutdown)",
+        "category": "Physical/Interface",
+        "osi_layer": "Layer 1",
+        "severity": "Critical",
+        "evidence": "Interface Serial0/0/0 is administratively down (protocol down)",
+        "explanation": "The interface Serial0/0/0 has been manually shut down with 'shutdown'.",
+        "suggested_fix": "interface Serial0/0/0\n no shutdown"
+      },
+      {
+        "rule_id": "RULE-L1-001",
+        "name": "Interface Administratively Down (Shutdown)",
+        "category": "Physical/Interface",
+        "osi_layer": "Layer 1",
+        "severity": "Critical",
+        "evidence": "Interface Serial0/0/1 is administratively down (protocol down)",
+        "explanation": "The interface Serial0/0/1 has been manually shut down with 'shutdown'.",
+        "suggested_fix": "interface Serial0/0/1\n no shutdown"
+      }
+    ],
+    "safety_risk": "Low",
+    "is_corrected_case": false
+  },
+  {
+    "case_id": "NET-037",
+    "title": "Duplicate IP Address Assigned to Static Host and Server",
+    "concept_tag": "Gateway",
+    "severity": "High",
+    "expected_osi_layer": "Layer 3",
+    "diagnosed_osi_layer": "Layer 2",
+    "layer_match": false,
+    "expected_fault": "Duplicate IP address 192.168.10.50 statically assigned to both HR-Server and PC-Finance in the same broadcast domain.",
+    "ai_root_cause": "MAC Address Flapping / Duplicate IP / L2 Loop: Multiple devices sharing identical IP/MAC address or active Layer 2 loop.",
+    "confidence": "High",
+    "confidence_score": 0.94,
+    "evidence": [
+      "MAC 0001.9654.1102 flapping between Fa0/2 and Fa0/10 on VLAN 10",
+      "%SW_MATM-4-MACFLAP_NOTIF: Host 0001.9654.1102 in vlan 10 is flapping between port Fa0/2 and port Fa0/10"
+    ],
+    "fix_steps": [
+      "Verify static IP allocations on Fa0/2 and Fa0/10."
+    ],
+    "verification_steps": [
+      "Execute 'show interfaces trunk' to verify operational state.",
+      "Execute end-to-end ICMP ping between source host and target destination to confirm reachability."
+    ],
+    "rule_findings_count": 1,
+    "rule_findings": [
+      {
+        "rule_id": "RULE-L2-006",
+        "name": "MAC Address Flapping / Duplicate IP / L2 Loop",
+        "category": "Switching/ARP",
+        "osi_layer": "Layer 2",
+        "severity": "High",
+        "evidence": "MAC 0001.9654.1102 flapping between Fa0/2 and Fa0/10 on VLAN 10",
+        "explanation": "Multiple devices sharing identical IP/MAC address or active Layer 2 loop.",
+        "suggested_fix": "Verify static IP allocations on Fa0/2 and Fa0/10."
+      }
+    ],
+    "safety_risk": "Medium",
+    "is_corrected_case": false
+  }
+]
